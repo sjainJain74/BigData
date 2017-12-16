@@ -1,0 +1,52 @@
+
+----------Explain This-------------
+
+Run command- 
+
+pig -x local 
+
+
+----------Explain This-------------
+
+REGISTER '/home/edureka/workspace/Pig_UDF/pig-udf.jar';
+A = LOAD '/home/edureka/employee_details' USING PigStorage(',') AS (id:int, name:chararray, score:int);
+B = FOREACH A GENERATE pigudf.CaseChange(name);
+dump B;
+
+
+-----------------------------------
+
+
+ON GRUNT SHELL 
+
+1.pwd 
+
+/home/cloudera/shashank
+
+2.  pig -x local 
+3. /home/cloudera/shashank
+4. exec pigUdf.pig
+
+
+
+
+
+(1,Amit,12,18)
+(2,Sumit,10,15)
+(3,Rohit,20,25)
+(4,Ronnit,40,40)
+
+
+
+(AMIT)
+(SUMIT)
+(ROHIT)
+(RONNIT)
+
+
+
+
+
+
+
+

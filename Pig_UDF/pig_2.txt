@@ -1,0 +1,171 @@
+employee_details.txt: 
+https://drive.google.com/file/d/0Bxr27gVaXO5sb3VFWlZkaXBHNFE/view?usp=sharing
+
+emplyoee_expenses.txt:
+https://drive.google.com/file/d/0Bxr27gVaXO5sbFdLUnQ4d01lcDg/view?usp=sharing
+
+
+---------------------------------------------------------------------------------------
+Local Mode Execution
+---------------------------------------------------------------------------------------
+pig -x local
+pwd
+
+--UNIX COMMAND
+
+cat employee_details;
+
+---------------------------------------------------------------------------------------
+Loading employee_details file
+---------------------------------------------------------------------------------------
+
+--LOAD, DUMP and DESCRIBE
+
+emp = LOAD 'employee_details' USING PigStorage(',') AS (emp_id:int, emp_name:chararray, emp_salary:int);
+dump emp;
+describe emp;
+
+--LIMIT
+
+five_emp = limit emp 2;
+dump five_emp;
+describe five_emp;
+
+---------------------------------------------------------------------------------------
+Filtering data on the basis of emp_name and emp_id
+---------------------------------------------------------------------------------------
+
+--FILTER and FOREACH
+
+filtered_emp_name = FILTER emp by emp_name matches 'A.*';
+dump filtered_emp_name;
+
+filtered_emp_id = FILTER emp by emp_id<110;
+dump filtered_emp_id;
+
+emp_salary = FOREACH emp generate emp_name, emp_salary*12;
+
+dump emp_salary;
+describe emp_salary;
+
+emp_annual_salary = FOREACH emp generate emp_name, emp_salary*12 as annual_salary;
+describe emp_annual_salary;
+
+---------------------------------------------------------------------------------------
+Ordering data on the basis of salary
+---------------------------------------------------------------------------------------
+
+--ORDER and STORE
+
+sorted_emp_annual_salary = ORDER emp_annual_salary by annual_salary desc;
+dump sorted_emp_annual_salary;
+
+sorted_emp_annual_salary = ORDER emp_annual_salary by annual_salary;
+dump sorted_emp_annual_salary;
+
+STORE sorted_emp_annual_salary into 'sorted_emp_annual_salary';
+
+ls
+cat sorted_emp_annual_salary;
+rm sorted_emp_annual_salary;
+
+STORE sorted_emp_annual_salary into 'sorted_emp_annual_salary' using PigStorage(';');
+cat sorted_emp_annual_salary;
+
+---------------------------------------------------------------------------------------
+Grouping data on the basis rating
+---------------------------------------------------------------------------------------
+
+--GROUP
+
+
+emp_with_rating = LOAD 'employee_details' USING PigStorage(',') AS (emp_id:int, emp_name:chararray, emp_salary:int, emp_rating:int);
+dump emp_with_rating;
+
+grouped_emp_with_rating = group emp_with_rating by emp_rating;
+dump grouped_emp_with_rating;
+describe grouped_emp_with_rating;
+
+grouped_emp_with_rating_count = foreach grouped_emp_with_rating generate group, COUNT(emp_with_rating);
+dump grouped_emp_with_rating_count;
+
+emp_with_rating = LOAD 'employee_details' USING PigStorage(',') AS (emp_id:int, emp_name:chararray, emp_salary:int, emp_rating:int);
+dump emp_with_rating;
+
+emp_with_rating = LOAD 'actorsalary' USING PigStorage(',') AS (emp_id:int, emp_name:chararray, emp_salary:int, emp_rating:int);
+dump emp_with_rating;
+
+grouped_emp_with_rating = group emp_with_rating by emp_rating;
+dump grouped_emp_with_rating;
+describe grouped_emp_with_rating;
+
+grouped_emp_with_rating_count = foreach grouped_emp_with_rating generate group, COUNT(emp_with_rating);
+dump grouped_emp_with_rating_count;
+describe grouped_emp_with_rating_count;
+
+grouped_emp_with_rating_avg_salary = foreach grouped_emp_with_rating generate group, AVG(emp_with_rating.emp_salary);
+
+grouped_emp_with_rating_all = group emp_with_rating all;
+dump grouped_emp_with_rating_all;
+describe grouped_emp_with_rating_all;
+
+grouped_emp_with_rating_all_count = foreach grouped_emp_with_rating_all generate COUNT(emp_with_rating):
+dump grouped_emp_with_rating_all_count;
+describe grouped_emp_with_rating_all_count;
+
+---------------------------------------------------------------------------------------
+Joining two datasets
+---------------------------------------------------------------------------------------
+
+--JOIN
+
+emp = LOAD 'employee_details' USING PigStorage(',') AS (emp_id:int, emp_name:chararray, emp_salary:int);
+emp_expenses = LOAD 'employee_expenses' AS (emp_id:int, expenses:int);
+
+joined_data = join emp by emp_id , emp_expenses by emp_id;
+dump joined_data;
+describe joined_data;
+
+left_outer_joined_data = join emp by emp_id left outer, emp_expenses by emp_id;
+dump left_outer_joined_data;
+describe left_outer_joined_data;
+
+emp = LOAD 'employee_details' USING PigStorage(',') AS (emp_id:int, emp_name:chararray, emp_salary:int);
+dump emp;
+
+
+
+
+
+-----------------------------------------------------------------------------------------
+Digonstic Operation In PIG
+---------------------------------------------------------------------------------------
+describe joined_data 
+explain joined_data
+Illustrate joined_data
+
+Illustrate grouped_emp_with_rating
+
+
+Using SPLIT to create multiple relations
+---------------------------------------------------------------------------------------
+
+--SPLIT
+
+SPLIT emp INTO
+filtered_emp_name if emp_name matches 'A.*',
+filtered_emp_id if emp_id<110,
+unmatch_relation OTHERWISE;
+
+describe filtered_emp_name;
+
+dump filtered_emp_id;
+describe filtered_emp_id;
+
+DUMP filtered_emp_name;
+DUMP filtered_emp_id;
+DUMP unmatch_relation;
+
+quit;
+
+
